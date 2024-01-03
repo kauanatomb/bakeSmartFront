@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
-import BackButton from '../components/BackButton';
-import Spinner from '../components/Spinner';
+import BackButton from '../../components/BackButton';
+import Spinner from '../../components/Spinner';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
-const DeleteBrand = () => {
+const DeleteRecipe = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleDeleteBook = () => {
+  const handleDeleteRecipe = () => {
     setLoading(true);
     axios
-      .delete(`http://localhost:5555/brands/${id}`)
+      .delete(`http://localhost:5555/recipes/${id}`)
       .then(() => {
         setLoading(false);
-        enqueueSnackbar('Brand Deleted successfully', { variant: 'success' });
-        navigate('/');
+        enqueueSnackbar('Receita deletada com sucesso', { variant: 'success' });
+        navigate('/recipes');
       })
       .catch((error) => {
         setLoading(false);
@@ -29,21 +29,21 @@ const DeleteBrand = () => {
   
   return (
     <div className='p-4'>
-      <BackButton />
-      <h1 className='text-3xl my-4'>Delete Book</h1>
+      <BackButton destination={"/recipes"}/>
+      <h1 className='text-3xl my-4'>Apagar Receita</h1>
       {loading ? <Spinner /> : ''}
-      <div className='flex flex-col items-center border-2 border-sky-400 rounded-xl w-[600px] p-8 mx-auto'>
-        <h3 className='text-2xl'>Are You Sure You want to delete this brand?</h3>
+      <div className='flex flex-col items-center border-2 border-sky-400 rounded-xl p-8 '>
+        <h3 className='text-2xl'>Você tem certeza que deseja apagar essa receita?</h3>
 
         <button
           className='p-4 bg-red-600 text-white m-8 w-full'
-          onClick={handleDeleteBook}
+          onClick={handleDeleteRecipe}
         >
-          Yes, Delete it
+          Sim, quero apagar
         </button>
       </div>
     </div>
   )
 }
 
-export default DeleteBrand;
+export default DeleteRecipe;

@@ -1,10 +1,11 @@
 import express from 'express' 
 import { createRecipe, getAllRecipes, getOneRecipe, updateOneRecipe, deleteOneRecipe } from '../controllers/recipeController.js';
+import auth from '../middleware/auth.js'
 
 
 const router = express.Router()
 
-router.post('/', createRecipe);
+router.post('/', auth, createRecipe);
 
 router.get('/', getAllRecipes)
 

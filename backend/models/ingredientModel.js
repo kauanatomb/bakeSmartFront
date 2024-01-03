@@ -13,17 +13,22 @@ const ingredientSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  idCategory: {
+  category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category'
   },
-  idUnitOfMeasure: {
+  unitOfMeasure: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'UnitOfMeasure'
   },
   price: {
     type: Number,
     required: true
+  },
+  owner: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    required: true, 
+    ref: "User" 
   }
 });
 

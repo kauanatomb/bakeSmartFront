@@ -1,12 +1,13 @@
 import { Ingredient } from '../models/ingredientModel.js';
 import { Category } from '../models/categoryModel.js'
 import { UnitOfMeasure } from '../models/unitOfMeasureModel.js'
+import { IngredientRecipe } from '../models/ingredientRecipeModel.js';
 
 const getAllIngredients = async (req, res) => {
   try {
     const ingredients = await Ingredient.find()
-      .populate('idCategory', 'name')
-      .populate('idUnitOfMeasure', 'unit abbreviation');
+      .populate('category', 'name')
+      .populate('unitOfMeasure', 'unit abbreviation');
 
     res.json({
       count: ingredients.length, 
@@ -18,27 +19,29 @@ const getAllIngredients = async (req, res) => {
 };
 
 const createIngredient = async (req, res) => {
-  const { name, quantity, brand, idCategory, idUnitOfMeasure, price } = req.body;
+  const { name, quantity, brand, category, unitOfMeasure, price } = req.body;
+  const userId = req.user.id
 
   try {
-    let findCategory = await Category.findOne({ name: idCategory });
-    let findUnitOfMeasure = await UnitOfMeasure.findOne({ unit: idUnitOfMeasure });
+    let findCategory = await Category.findOne({ name: category });
+    let findUnitOfMeasure = await UnitOfMeasure.findOne({ unit: unitOfMeasure });
 
     if (!findCategory) {
-      return res.status(404).json({ message: `Categoria '${idCategory}' não encontrada.` });
+      return res.status(404).json({ message: `Category '${category}' not found.` });
     }
 
     if (!findUnitOfMeasure) {
-      return res.status(404).json({ message: `Unidade de medida '${idUnitOfMeasure}' não encontrada.` });
+      return res.status(404).json({ message: `Unit of measure '${unitOfMeasure}' not found.` });
     }
 
     const newIngredient = await Ingredient.create({
       name,
       quantity,
       brand,
-      idCategory: findCategory._id,
-      idUnitOfMeasure: findUnitOfMeasure._id,
+      category: findCategory._id,
+      unitOfMeasure: findUnitOfMeasure._id,
       price,
+      owner: userId
     });
 
     res.status(201).json(newIngredient);
@@ -50,19 +53,19 @@ const createIngredient = async (req, res) => {
 const updateIngredient = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, quantity, brand, idCategory, idUnitOfMeasure, price } = req.body;
+    const { name, quantity, brand, category, unitOfMeasure, price } = req.body;
 
-    if (!idCategory || !idUnitOfMeasure) {
+    if (!category || !unitOfMeasure) {
       return res.status(400).json({ message: 'Category and unit of measure are required' });
     }
 
-    const findUnitOfMeasure = await UnitOfMeasure.findOne({ unit: idUnitOfMeasure })
+    const findUnitOfMeasure = await UnitOfMeasure.findOne({ unit: unitOfMeasure })
 
     if (!findUnitOfMeasure) {
       return res.status(404).json({ message: 'Ingredient not found' });
     }
 
-    const findCategory = await Category.findOne({ name: idCategory })
+    const findCategory = await Category.findOne({ name: category })
 
     if (!findCategory) {
       return res.status(404).json({ message: 'Ingredient not found' });
@@ -74,8 +77,8 @@ const updateIngredient = async (req, res) => {
         name,
         quantity,
         brand,
-        idCategory: findCategory._id,
-        idUnitOfMeasure: findUnitOfMeasure._id,
+        category: findCategory._id,
+        unitOfMeasure: findUnitOfMeasure._id,
         price,
       },
       { new: true }
@@ -91,9 +94,56 @@ const updateIngredient = async (req, res) => {
   }
 };
 
+const deleteOneIngredient = async (req, resp) => {
+  try {
+    const { id } = req.params;
+
+    IngredientRecipe.deleteMany({ ingredient: id })
+    .then((result) => {
+      console.log(`${result.deletedCount} documents removed with sucess!`);
+    })
+    .catch((error) => {
+      console.error('Error to remove document:', error);
+    });
+
+    const result = await Ingredient.findByIdAndDelete(id);
+
+    if (!result) {
+      return resp.status(404).json({ message: 'Ingredient not found' });
+    }
+
+    return resp.status(200).send({ message: 'Ingredient deleted successfully' });
+  } catch (error) {
+    console.log(error.message);
+    resp.status(500).send({ message: error.message });
+  }
+};
+
+
+const getOneIngredient = async (req, res) => {
+
+  const { id } = req.params
+  try {
+    const ingredient = await Ingredient.findById(id)
+      .populate('category')
+      .populate('unitOfMeasure');
+
+    if (!ingredient) {
+      return res.status(404).json({ message: 'Ingredient not found' });
+    }
+
+    res.status(200).json( ingredient );
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 
 export {
   getAllIngredients,
   createIngredient,
   updateIngredient,
+  deleteOneIngredient,
+  getOneIngredient
 };

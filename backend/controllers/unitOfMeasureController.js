@@ -5,7 +5,7 @@ const getAllUnitOfMeasures = async (req, res) => {
     const unitOfMeasures = await UnitOfMeasure.find({}, 'unit abbreviation');
     res.json({
       count: unitOfMeasures.length, 
-      data: unitOfMeasures
+      unitOfMeasures: unitOfMeasures
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

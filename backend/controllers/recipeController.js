@@ -1,35 +1,60 @@
 import { Recipe } from '../models/recipeModel.js'
 import { IngredientRecipe } from '../models/ingredientRecipeModel.js'
+import { Ingredient } from '../models/ingredientModel.js';
+import { UnitOfMeasure } from '../models/unitOfMeasureModel.js';
 
 const createRecipe = async (request, response) => {
   try {
-
     const { name, description, cookTime } = request.body;
-    const newRecipe = { name, description, cookTime };
+    const userId = request.user.id
+
+    const newRecipe = { 
+      name, 
+      description, 
+      cookTime,
+      owner: userId 
+    };
 
     const recipe = await Recipe.create(newRecipe);
 
-    return response.status(201).send(recipe);
+    return response.status(201).send({ _id: recipe._id });
   } catch (error) {
     console.log(error.message);
-    return response.status(500).send({ message: 'Internal Server Error' });
+    return response.status(500).send({ message: `Internal Server Error` });
   }
 };
 
 const getAllRecipes = async (request, response) => {
   try {
-    const recipes = await Recipe.find();
+    const recipes = await Recipe.find().lean();
     const recipesWithIngredients = [];
 
     for (const recipe of recipes) {
       const ingredientsRecipe = await IngredientRecipe.find({ recipe: recipe._id })
         .populate('ingredient', 'name')
-        .populate('unitOfMeasure', 'unit');
+        .populate('unitOfMeasure', 'unit')
+        .lean();
 
-      recipesWithIngredients.push({
-        recipe,
-        ingredients: ingredientsRecipe
-      });
+      const ingredients = ingredientsRecipe.map(({ ingredient, quantity, unitOfMeasure }) => ({
+        _id: ingredient._id,
+        name: ingredient.name,
+        quantity,
+        unitOfMeasure: {
+          _id: unitOfMeasure._id,
+          unit: unitOfMeasure.unit,
+        },
+      }));
+
+      const recipeWithIngredients = {
+        _id: recipe._id,
+        name: recipe.name,
+        description: recipe.description,
+        cookTime: recipe.cookTime,
+        owner: recipe.owner,
+        ingredients,
+      };
+
+      recipesWithIngredients.push(recipeWithIngredients);
     }
 
     response.json({ data: recipesWithIngredients });
@@ -39,20 +64,43 @@ const getAllRecipes = async (request, response) => {
   }
 };
 
-
 const getOneRecipe = async (request,response) => {
   try {
     const { id } = request.params;
-    const recipe = await Recipe.findById(id)
+    const recipe = await Recipe.findById(id).lean()
+    const recipesWithIngredients = [];
+
     const ingredientsRecipe = await IngredientRecipe.find({ recipe: id })
-    .populate('ingredient')
-    .populate('unitOfMeasure')
+      .populate('ingredient', 'name')
+      .populate('unitOfMeasure', 'unit')
+      .lean();
+
+      const costRecipe = await calculateCost(ingredientsRecipe)
+
+      const ingredients = ingredientsRecipe.map(({ ingredient, quantity, unitOfMeasure }) => ({
+        _id: ingredient._id,
+        name: ingredient.name,
+        quantity,
+        unitOfMeasure: {
+          _id: unitOfMeasure._id,
+          unit: unitOfMeasure.unit,
+        },
+      }));
+
+      const recipeWithIngredients = {
+        _id: recipe._id,
+        name: recipe.name,
+        description: recipe.description,
+        cookTime: recipe.cookTime,
+        owner: recipe.owner,
+        ingredients,
+        costRecipe
+      };
+
+      recipesWithIngredients.push(recipeWithIngredients);
 
     return response.status(200).json({ 
-      data: {
-        recipe,
-        ingredients: ingredientsRecipe
-      }
+      data: recipeWithIngredients
     })
   } catch (error) {
     console.log(error.message);
@@ -62,24 +110,33 @@ const getOneRecipe = async (request,response) => {
 
 const updateOneRecipe = async (request, response) => {
   try {
+    const { id } = request.params;
 
-    const { id } = request.params
-    const result = await Recipe.findByIdAndUpdate(id, request.body)
-    if (!result) {
-      return response.status(404).json({ message: 'Recipe not found' })
+    const updatedRecipe = await Recipe.findByIdAndUpdate(id, request.body);
+
+    if (!updatedRecipe) {
+      return response.status(404).json({ message: 'Recipe not found' });
     }
-    response.json(result);
-    return response.status(200).send({ message: 'Recipe updated successfully' })
 
+    response.status(200).json({ message: 'Recipe updated successfully', updatedRecipe });
   } catch (error) {
     console.log(error.message);
-    response.status(500).send({ message: error.message })
+    response.status(500).send({ message: error.message });
   }
-}
+};
 
 const deleteOneRecipe = async (request, response) => {
   try {
     const { id } = request.params
+
+    IngredientRecipe.deleteMany({ recipe: id })
+    .then((result) => {
+      console.log(`${result.deletedCount} documents removed with sucess!`);
+    })
+    .catch((error) => {
+      console.error('Error to remove document:', error);
+    });
+
     const result = await Recipe.findByIdAndDelete(id)
 
     if (!result) {
@@ -90,6 +147,36 @@ const deleteOneRecipe = async (request, response) => {
   } catch (error) {
     console.log(error.message);
     response.status(500).send({ message: error.message })
+  }
+}
+
+async function calculateCost(ingredientsRecipe) {
+  let totalCost = 0;
+
+  for (const { recipe, ingredient, quantity, unitOfMeasure } of ingredientsRecipe) {
+    const ingrediente = await Ingredient.findById(ingredient).populate('unitOfMeasure').exec();
+    const recipeIngredientUnit = unitOfMeasure.unit;
+
+    if (recipeIngredientUnit !== ingrediente.unitOfMeasure.unit) {
+      const convertedQuantity = convertUnitOfMeasure(quantity, recipeIngredientUnit, ingrediente.unitOfMeasure.unit);
+      const cost = (convertedQuantity / ingrediente.quantity) * ingrediente.price;
+      totalCost += cost;
+    } else {
+      const cost = (quantity / ingrediente.quantity) * ingrediente.price;
+      totalCost += cost;
+    }
+  }
+  
+  return totalCost;
+}
+
+function convertUnitOfMeasure(quantity, recipeUnit, ingredientUnit) {
+  if (recipeUnit === "Kilograma" && ingredientUnit === "Gramas") {
+    return quantity * 1000
+  } else if (recipeUnit === "Gramas" && ingredientUnit === "Kilograma") {
+    return quantity / 1000
+  } else {
+    throw new Error(`Incompatible units for conversion ${quantity} ${recipeUnit} ${ingredientUnit} `);
   }
 }
 

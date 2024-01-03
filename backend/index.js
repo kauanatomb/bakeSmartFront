@@ -6,6 +6,7 @@ import ingredientsRoute from './routes/ingredientsRoute.js'
 import unitOfMeasuresRoute from './routes/unitOfMeasuresRoute.js'
 import categoriesRoute from './routes/categoriesRoute.js'
 import ingredientsRecipeRoute from './routes/ingredientsRecipeRoute.js'
+import usersRoute from './routes/usersRoute.js'
 import cors from 'cors'
 
 const app = express()
@@ -22,6 +23,7 @@ app.use('/ingredients', ingredientsRoute)
 app.use('/unitofmeasures', unitOfMeasuresRoute)
 app.use('/categories', categoriesRoute)
 app.use('/', ingredientsRecipeRoute)
+app.use('/user', usersRoute)
 
 app.get('/', (request, response) => {
   console.log(request);
