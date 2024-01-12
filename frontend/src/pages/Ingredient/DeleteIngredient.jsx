@@ -10,11 +10,21 @@ const DeleteIngredient = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    enqueueSnackbar('Faça login para deletar um ingrediente', { variant: 'warning' });
+    navigate('/login');
+  }
 
   const handleDeleteIngredient = () => {
     setLoading(true);
     axios
-      .delete(`http://localhost:5555/ingredients/${id}`)
+      .delete(`http://localhost:5555/ingredients/${id}` , {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       .then(() => {
         setLoading(false);
         enqueueSnackbar('Ingrediente deletado com sucesso', { variant: 'success' });

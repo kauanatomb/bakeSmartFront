@@ -5,7 +5,8 @@ import { IngredientRecipe } from '../models/ingredientRecipeModel.js';
 
 const getAllIngredients = async (req, res) => {
   try {
-    const ingredients = await Ingredient.find()
+    const userId = req.user.id
+    const ingredients = await Ingredient.find({ owner: userId })
       .populate('category', 'name')
       .populate('unitOfMeasure', 'unit abbreviation');
 
@@ -53,6 +54,7 @@ const createIngredient = async (req, res) => {
 const updateIngredient = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.id
     const { name, quantity, brand, category, unitOfMeasure, price } = req.body;
 
     if (!category || !unitOfMeasure) {
@@ -71,8 +73,7 @@ const updateIngredient = async (req, res) => {
       return res.status(404).json({ message: 'Ingredient not found' });
     }
 
-    const updatedIngredient = await Ingredient.findByIdAndUpdate(
-      id,
+    const updatedIngredient = await Ingredient.findByIdAndUpdate( id, 
       {
         name,
         quantity,
@@ -80,6 +81,7 @@ const updateIngredient = async (req, res) => {
         category: findCategory._id,
         unitOfMeasure: findUnitOfMeasure._id,
         price,
+        owner: userId
       },
       { new: true }
     );
@@ -97,8 +99,9 @@ const updateIngredient = async (req, res) => {
 const deleteOneIngredient = async (req, resp) => {
   try {
     const { id } = req.params;
+    const userId = req.user.id
 
-    IngredientRecipe.deleteMany({ ingredient: id })
+    IngredientRecipe.deleteMany({ ingredient: id, owner: userId })
     .then((result) => {
       console.log(`${result.deletedCount} documents removed with sucess!`);
     })
@@ -123,8 +126,9 @@ const deleteOneIngredient = async (req, resp) => {
 const getOneIngredient = async (req, res) => {
 
   const { id } = req.params
+  const userId = req.user.id
   try {
-    const ingredient = await Ingredient.findById(id)
+    const ingredient = await Ingredient.findOne({ _id: id, owner: userId })
       .populate('category')
       .populate('unitOfMeasure');
 

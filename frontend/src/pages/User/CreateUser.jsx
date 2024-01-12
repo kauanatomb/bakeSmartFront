@@ -49,9 +49,9 @@ const CreateUser = () => {
           />
         </div>
         <div className="flex flex-col">
-          <label className="mb-1">Email:</label>
+          <label className="mb-1">Nome:</label>
           <input
-            type="email"
+            type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="border border-gray-300 px-3 py-2 rounded-lg"

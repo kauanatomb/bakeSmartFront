@@ -14,9 +14,20 @@ const EditRecipe = () => {
   const {id} = useParams();
   const { enqueueSnackbar } = useSnackbar();
 
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    enqueueSnackbar('Faça login para deletar uma receita', { variant: 'warning' });
+    navigate('/login');
+  }
+
   useEffect(() => {
     setLoading(true);
-    axios.get(`http://localhost:5555/recipes/${id}`)
+    axios.get(`http://localhost:5555/recipes/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
     .then((response) => {
         setName(response.data.data.name);
         setDescription(response.data.data.description);
@@ -27,7 +38,7 @@ const EditRecipe = () => {
         alert('An error happened. Please Check console');
         console.log(error);
       });
-  }, [id])
+  }, [id, token])
   
   const handleEditRecipe = () => {
     const data = {
@@ -38,7 +49,11 @@ const EditRecipe = () => {
 
     setLoading(true);
     axios
-      .put(`http://localhost:5555/recipes/${id}`, data)
+      .put(`http://localhost:5555/recipes/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       .then(() => {
         setLoading(false);
         enqueueSnackbar('Recipe Edited successfully', { variant: 'success' });

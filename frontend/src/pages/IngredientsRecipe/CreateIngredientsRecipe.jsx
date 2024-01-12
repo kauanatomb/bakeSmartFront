@@ -16,11 +16,21 @@ const CreateIngredientsRecipe = () => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const { id } = useParams();
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    enqueueSnackbar('Faça login para criar um ingrediente', { variant: 'warning' });
+    navigate('/login');
+  }
 
   useEffect(() => {
     setLoading(true);
     axios
-      .get('http://localhost:5555/ingredients')
+      .get('http://localhost:5555/ingredients', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         setIngredients(response.data.data);
         setLoading(false);

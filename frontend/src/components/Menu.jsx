@@ -18,6 +18,9 @@ const Menu = () => {
           <Link to="/profile" className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-400 mr-4">
             Gerenciar Perfil
           </Link>
+          <Link to="/logout" className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-400 mr-4">
+            Logout
+          </Link>
         </div>
       </div>
     </nav>

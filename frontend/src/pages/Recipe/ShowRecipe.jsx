@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useSnackbar } from 'notistack';
 import BackButton from '../../components/BackButton'
 import Spinner from '../../components/Spinner'
 import { Link } from 'react-router-dom';
@@ -11,11 +12,23 @@ const ShowRecipe = () => {
   const [recipe, setRecipe] = useState({})
   const [loading, setLoading] = useState(false)
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    enqueueSnackbar('Faça login para deletar uma receita', { variant: 'warning' });
+    navigate('/login');
+  }
 
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:5555/recipes/${id}`)
+      .get(`http://localhost:5555/recipes/${id}` , {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       .then((response) => {
         setRecipe(response.data.data);
         setLoading(false);

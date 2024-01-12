@@ -4,14 +4,14 @@ import auth from '../middleware/auth.js'
 
 const router = express.Router()
 
-router.get('/', getAllIngredients);
+router.get('/', auth, getAllIngredients);
 
 router.post('/', auth, createIngredient);
 
-router.put('/:id', updateIngredient);
+router.put('/:id', auth, updateIngredient);
 
-router.delete('/:id', deleteOneIngredient);
+router.delete('/:id', auth, deleteOneIngredient);
 
-router.get('/:id', getOneIngredient);
+router.get('/:id', auth, getOneIngredient);
 
 export default router

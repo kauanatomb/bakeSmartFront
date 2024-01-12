@@ -7,12 +7,12 @@ const router = express.Router()
 
 router.post('/', auth, createRecipe);
 
-router.get('/', getAllRecipes)
+router.get('/', auth, getAllRecipes);
 
-router.get(`/:id`, getOneRecipe)
+router.get(`/:id`, auth, getOneRecipe)
 
-router.put('/:id', updateOneRecipe)
+router.put('/:id', auth, updateOneRecipe)
 
-router.delete('/:id', deleteOneRecipe)
+router.delete('/:id', auth, deleteOneRecipe)
 
 export default router

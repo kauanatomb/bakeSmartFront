@@ -29,7 +29,11 @@ const LoginUser = () => {
       })
       .catch((error) => {
         setLoading(false);
-        enqueueSnackbar('Erro ao fazer login. Verifique suas credenciais.', { variant: 'error' });
+        if (error.response && error.response.data && error.response.data.error) {
+          enqueueSnackbar(error.response.data.error, { variant: 'error' });
+        } else {
+          enqueueSnackbar('Erro ao fazer login. Verifique suas credenciais.', { variant: 'error' });
+        }
         console.error('Erro ao fazer login:', error);
       });
   };

@@ -12,9 +12,19 @@ const DeleteRecipe = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleDeleteRecipe = () => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      enqueueSnackbar('Faça login para deletar uma receita', { variant: 'warning' });
+      navigate('/login');
+    }
     setLoading(true);
     axios
-      .delete(`http://localhost:5555/recipes/${id}`)
+      .delete(`http://localhost:5555/recipes/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
       .then(() => {
         setLoading(false);
         enqueueSnackbar('Receita deletada com sucesso', { variant: 'success' });

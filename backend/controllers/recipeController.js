@@ -26,7 +26,9 @@ const createRecipe = async (request, response) => {
 
 const getAllRecipes = async (request, response) => {
   try {
-    const recipes = await Recipe.find().lean();
+
+    const userId = request.user.id
+    const recipes = await Recipe.find({ owner: userId }).lean();
     const recipesWithIngredients = [];
 
     for (const recipe of recipes) {
@@ -66,8 +68,9 @@ const getAllRecipes = async (request, response) => {
 
 const getOneRecipe = async (request,response) => {
   try {
+    const userId = request.user.id
     const { id } = request.params;
-    const recipe = await Recipe.findById(id).lean()
+    const recipe = await Recipe.findOne({ _id: id, owner: userId }).lean();
     const recipesWithIngredients = [];
 
     const ingredientsRecipe = await IngredientRecipe.find({ recipe: id })
@@ -111,8 +114,9 @@ const getOneRecipe = async (request,response) => {
 const updateOneRecipe = async (request, response) => {
   try {
     const { id } = request.params;
+    const userId = request.user.id
 
-    const updatedRecipe = await Recipe.findByIdAndUpdate(id, request.body);
+    const updatedRecipe = await Recipe.findOneAndUpdate({ _id: id, owner: userId }, request.body, { new: true }).lean();
 
     if (!updatedRecipe) {
       return response.status(404).json({ message: 'Recipe not found' });
@@ -128,8 +132,9 @@ const updateOneRecipe = async (request, response) => {
 const deleteOneRecipe = async (request, response) => {
   try {
     const { id } = request.params
+    const userId = request.user.id
 
-    IngredientRecipe.deleteMany({ recipe: id })
+    IngredientRecipe.deleteMany({ recipe: id, owner: userId })
     .then((result) => {
       console.log(`${result.deletedCount} documents removed with sucess!`);
     })

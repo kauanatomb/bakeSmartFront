@@ -2,20 +2,33 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Spinner from '../components/Spinner';
 import Menu from '../components/Menu.jsx'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { BsInfoCircle } from 'react-icons/bs';
 import { MdOutlineAddBox, MdOutlineDelete } from 'react-icons/md';
+import { useSnackbar } from 'notistack';
 import IngredientsTable from './Ingredient/IngredientsTable.jsx';
 
 const HomeIngredients = () => {
   const [ingredients, setIngredients] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    enqueueSnackbar('Faça login para deletar uma receita', { variant: 'warning' });
+    navigate('/login');
+  }
 
   useEffect(() => {
     setLoading(true);
     axios
-      .get('http://localhost:5555/ingredients')
+      .get('http://localhost:5555/ingredients', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       .then((response) => {
         setIngredients(response.data.data);
         setLoading(false);
@@ -24,7 +37,7 @@ const HomeIngredients = () => {
         console.log(error);
         setLoading(false);
       });
-  }, []);
+  }, [token]);
 
   return (
     <>
