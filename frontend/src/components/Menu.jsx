@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import LogoutButton from './LogoutComponent';
 
 const Menu = () => {
   return (
@@ -15,12 +16,10 @@ const Menu = () => {
           <Link to="/ingredients" className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-400 mr-4">
             Ingredientes
           </Link>
-          <Link to="/profile" className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-400 mr-4">
+          {/* <Link to={`/profile/${id}`} className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-400 mr-4">
             Gerenciar Perfil
-          </Link>
-          <Link to="/logout" className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-400 mr-4">
-            Logout
-          </Link>
+          </Link> */}
+          <LogoutButton />
         </div>
       </div>
     </nav>

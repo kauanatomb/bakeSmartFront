@@ -2,7 +2,7 @@ import axios from 'axios';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const LogoutButton = ({ onLogout }) => {
+const LogoutButton = () => {
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -12,7 +12,7 @@ const LogoutButton = ({ onLogout }) => {
   }
 
   const handleLogout = () => {
-    axios.get('http://localhost:5555/user/logout', {
+    axios.post('http://localhost:5555/user/logout', null, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -20,16 +20,14 @@ const LogoutButton = ({ onLogout }) => {
     .then(() => {
       localStorage.removeItem('token');
       navigate('/login');
-      onLogout();
     })
     .catch((error) => {
       console.log('Error logging out:', error);
     });
-    onLogout();
-  };
+  };  
 
   return (
-    <button onClick={handleLogout}>Logout</button>
+    <button className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-400 mr-4" onClick={handleLogout}>Logout</button>
   );
 };
 

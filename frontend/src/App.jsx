@@ -13,12 +13,14 @@ import CreateIngredientsRecipe from './pages/IngredientsRecipe/CreateIngredients
 import DeleteIngredientRecipe from './pages/IngredientsRecipe/DeleteIngredientRecipe.jsx'
 import LoginUser from './pages/User/LoginUser.jsx'
 import CreateUser from './pages/User/CreateUser.jsx'
+// import EditUser from './pages/User/EditUser.jsx'
 
 const App = () => {
   return (
     <Routes>
       <Route path='/login' element={<LoginUser/>}/>
       <Route path='/signup' element={<CreateUser/>}/>
+      {/* <Route path='/profile/:id' element={<EditUser/>}/> */}
       <Route path='/recipes' element={<HomeRecipes/>} />
       <Route path='/ingredients' element={<HomeIngredients/>} />
       <Route path='/ingredients/delete/:id' element={<DeleteIngredient/>} />

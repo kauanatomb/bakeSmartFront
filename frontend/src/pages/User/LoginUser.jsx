@@ -3,6 +3,7 @@ import Spinner from '../../components/Spinner';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import { Link } from 'react-router-dom';
 
 const LoginUser = () => {
 
@@ -39,7 +40,7 @@ const LoginUser = () => {
   };
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <h2 className="text-3xl font-bold mb-4">Login</h2>
+      <h2 className="text-3xl font-bold mb-4">Acesse sua conta</h2>
       {loading ? <Spinner /> : ''}
       <form onSubmit={(e) => { e.preventDefault(); handleLoginUser(); }} className="flex flex-col gap-4">
         <div className="flex flex-col">
@@ -67,6 +68,9 @@ const LoginUser = () => {
         >
           {loading ? 'Carregando...' : 'Login'}
         </button>
+        <Link to="/signup" className="text-blue-500 hover:text-blue-600">
+          Não tenho conta
+        </Link>
       </form>
     </div>
   )

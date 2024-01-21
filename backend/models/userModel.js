@@ -38,7 +38,9 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.GenerateAuthToken = async function () {
   const user = this;
   const JWT_SECRET = process.env.JWT_SECRET;
-  const token = jwt.sign({ id: user._id.toString() }, JWT_SECRET);
+  const expiresIn = '1h';
+
+  const token = jwt.sign({ id: user._id.toString() }, JWT_SECRET, { expiresIn });
 
   const existingToken = user.tokens.find((t) => t.token === token);
   if (!existingToken) {
