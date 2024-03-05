@@ -57,7 +57,7 @@ const EditRecipe = () => {
       .then(() => {
         setLoading(false);
         enqueueSnackbar('Recipe Edited successfully', { variant: 'success' });
-        navigate('/recipes');
+        navigate(`/recipes`);
       })
       .catch((error) => {
         setLoading(false);

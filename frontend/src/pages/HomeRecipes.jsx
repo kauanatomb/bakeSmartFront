@@ -16,14 +16,17 @@ const HomeRecipes = () => {
   const { enqueueSnackbar } = useSnackbar();
   const token = localStorage.getItem('token');
 
-  if (!token) {
-    enqueueSnackbar('Faça login para deletar uma receita', { variant: 'warning' });
-    navigate('/login');
-  }
+  useEffect(() => {
+    if (token == 'undefined' || !token) {
+      navigate('/login');
+      enqueueSnackbar('Faça login para vesualizar suas receitas', { variant: 'warning' });
+    }
+  }, [token, navigate, enqueueSnackbar]);
+
   useEffect(() => {
     setLoading(true);
     axios
-      .get('http://localhost:5555/recipes', {
+      .get(`${import.meta.env.VITE_API_URL}recipes`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

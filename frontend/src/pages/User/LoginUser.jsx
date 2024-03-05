@@ -14,17 +14,16 @@ const LoginUser = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleLoginUser = () => {
-    const data = {
+    const user = {
       email,
       password
     };
     setLoading(true);
     axios
-      .post('http://localhost:5555/user/login', data)
+    .post(`${import.meta.env.VITE_API_URL}/login`, { user: user })
       .then((response) => {
         setLoading(false);
-        const { token } = response.data;
-        localStorage.setItem('token', token);
+        localStorage.setItem('token', response.headers['authorization']);
         enqueueSnackbar('Login realizado com sucesso', { variant: 'success' });
         navigate('/recipes');
       })
