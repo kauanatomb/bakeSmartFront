@@ -19,20 +19,16 @@ const HomeIngredients = () => {
   useEffect(() => {
     if (token == 'undefined' || !token) {
       navigate('/login');
-      enqueueSnackbar('Faça login para vesualizar seus ingredientes', { variant: 'warning' });
+      enqueueSnackbar('Faça login para visualizar seus ingredientes', { variant: 'warning' });
     }
   }, [token, navigate, enqueueSnackbar]);
 
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${import.meta.env.VITE_API_URL}/ingredients`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      .get(`${import.meta.env.VITE_API_URL}/ingredients`)
       .then((response) => {
-        setIngredients(response.data.data);
+        setIngredients(response.data);
         setLoading(false);
       })
       .catch((error) => {

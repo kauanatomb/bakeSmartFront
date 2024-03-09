@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BackButton from '../../components/BackButton';
 import Spinner from '../../components/Spinner';
 import axios from 'axios';
@@ -13,6 +13,7 @@ const CreateRecipes = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+  const token = localStorage.getItem('token');
 
   const handleCreateRecipe = () => {
     const data = {
@@ -21,12 +22,17 @@ const CreateRecipes = () => {
       cookTime
     };
   
-    const token = localStorage.getItem('token');
+    useEffect(() => {
+      if (token == 'undefined' || !token) {
+        navigate('/login');
+        enqueueSnackbar('Faça login para criar suas receitas', { variant: 'warning' });
+      }
+    }, [token])};
   
-    if (token) {
+    useEffect(() => {
       setLoading(true);
       axios
-        .post('http://localhost:5555/recipes', data, {
+        .post(`${import.meta.env.VITE_API_URL}/recipes`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -42,11 +48,7 @@ const CreateRecipes = () => {
           enqueueSnackbar('Erro ao criar receita', { variant: 'error' });
           console.error('Erro ao criar receita:', error);
         });
-    } else {
-      enqueueSnackbar('Faça login para criar uma receita', { variant: 'warning' });
-      navigate('/login');
-    }
-  };
+    }, [data, token])
 
   return ( 
     <div className='p-4'>

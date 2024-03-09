@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BackButton from '../../components/BackButton';
 import Spinner from '../../components/Spinner';
 import axios from 'axios';
@@ -14,29 +14,34 @@ const DeleteRecipe = () => {
   const handleDeleteRecipe = () => {
     const token = localStorage.getItem('token');
 
-    if (!token) {
-      enqueueSnackbar('Faça login para deletar uma receita', { variant: 'warning' });
-      navigate('/login');
-    }
-    setLoading(true);
-    axios
-      .delete(`http://localhost:5555/recipes/${id}`, {
+    useEffect(() => {
+      if (token == 'undefined' || !token) {
+        navigate('/login');
+        enqueueSnackbar('Faça login para deletar suas receitas', { variant: 'warning' });
+      }
+    }, [token]);
+  
+    useEffect(() => {
+      setLoading(true);
+      axios
+        .delete(`${import.meta.env.VITE_API_URL}/recipes/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         })
-      .then(() => {
-        setLoading(false);
-        enqueueSnackbar('Receita deletada com sucesso', { variant: 'success' });
-        navigate('/recipes');
-      })
-      .catch((error) => {
-        setLoading(false);
-        enqueueSnackbar('Error', { variant: 'error' });
-        console.log(error);
-      });
+        .then(() => {
+          setLoading(false);
+          enqueueSnackbar('Receita deletada com sucesso', { variant: 'success' });
+          navigate('/recipes');
+        })
+        .catch((error) => {
+          setLoading(false);
+          enqueueSnackbar('Error', { variant: 'error' });
+          console.log(error);
+        });
+    }, [token]);
   };
-  
+
   return (
     <div className='p-4'>
       <BackButton destination={"/recipes"}/>
@@ -53,7 +58,7 @@ const DeleteRecipe = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default DeleteRecipe;

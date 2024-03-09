@@ -11,20 +11,31 @@ const CreateIngredients = () => {
   const [brand, setBrand] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
-  const [selectedUnitOfMeasure, setSelectedUnitOfMeasure] = useState('');
-  const [unitOfMeasures, setUnitOfMeasures] = useState([]);
+  const [selectedUnit, setSelectedUnit] = useState('');
+  const [measurementUnits, setMeasurementUnits] = useState([]);
   const [price, setPrice] = useState('');
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (token == "undefined" || !token) {
+      navigate("/login");
+      enqueueSnackbar("Faça login para criar um ingrediente", {
+        variant: "warning",
+      });
+    }
+  }, [token]);
+
   useEffect(() => {
     setLoading(true);
     axios
-      .get('http://localhost:5555/categories')
+      .get(`${import.meta.env.VITE_API_URL}/categories`)
       .then((response) => {
-        setCategories(response.data.categories);
+        setCategories(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -36,9 +47,9 @@ const CreateIngredients = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get('http://localhost:5555/unitOfMeasures')
+      .get(`${import.meta.env.VITE_API_URL}/measurement_units`)
       .then((response) => {
-        setUnitOfMeasures(response.data.unitOfMeasures);
+        setMeasurementUnits(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -53,16 +64,14 @@ const CreateIngredients = () => {
       quantity,
       brand,
       category: selectedCategory,
-      unitOfMeasure: selectedUnitOfMeasure,
+      measurement_unit: selectedUnit,
       price
     };
-
-    const token = localStorage.getItem('token');
   
     if (token) {
       setLoading(true);
       axios
-        .post('http://localhost:5555/ingredients', data, {
+        .post(`${import.meta.env.VITE_API_URL}/ingredients`, data, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -78,7 +87,7 @@ const CreateIngredients = () => {
           console.error('Erro ao criar ingrediente:', error);
         });
     } else {
-      enqueueSnackbar('Faça login para criar uma ingrediente', { variant: 'warning' });
+      enqueueSnackbar('Faça login para criar um ingrediente', { variant: 'warning' });
       navigate('/login');
     }
   };
@@ -117,7 +126,7 @@ const CreateIngredients = () => {
             >
               <option value=''>Selecione uma categoria</option>
               {categories.map((category, index) => (
-                <option key={index} value={category.name}>
+                <option key={index} value={category.id}>
                   {category?.name}
                 </option>
               ))}
@@ -126,14 +135,14 @@ const CreateIngredients = () => {
           <div>
             <label className='text-xl mr-4 text-gray-500'>Escolha uma unidade de medida</label>
             <select
-              value={selectedUnitOfMeasure}
-              onChange={(e) => setSelectedUnitOfMeasure(e.target.value)}
+              value={selectedUnit}
+              onChange={(e) => setSelectedUnit(e.target.value)}
               className='form-select border border-gray-500 px-4 py-2 w-full'
             >
               <option value=''>Selecione uma unidade de medida</option>
-              {unitOfMeasures.map((uom, index) => (
-                <option key={index} value={uom.unit}>
-                  {uom.unit}
+              {measurementUnits.map((uom, index) => (
+                <option key={index} value={uom.id}>
+                  {uom.name}
                 </option>
               ))}
             </select>
