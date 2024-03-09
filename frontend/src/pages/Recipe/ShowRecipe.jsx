@@ -24,7 +24,7 @@ const ShowRecipe = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:5555/recipes/${id}` , {
+      .get(`${import.meta.env.VITE_API_URL}/recipes/${id}` , {
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -26,7 +26,7 @@ const HomeRecipes = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${import.meta.env.VITE_API_URL}recipes`, {
+      .get(`${import.meta.env.VITE_API_URL}/recipes`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

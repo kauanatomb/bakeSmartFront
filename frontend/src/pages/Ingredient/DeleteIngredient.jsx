@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BackButton from '../../components/BackButton';
 import Spinner from '../../components/Spinner';
 import axios from 'axios';
@@ -12,19 +12,19 @@ const DeleteIngredient = () => {
   const { enqueueSnackbar } = useSnackbar();
   const token = localStorage.getItem('token');
 
-  if (!token) {
-    enqueueSnackbar('Faça login para deletar um ingrediente', { variant: 'warning' });
-    navigate('/login');
-  }
+  useEffect(() => {
+    if (token == "undefined" || !token) {
+      navigate("/login");
+      enqueueSnackbar("Faça login para deletar um ingrediente", {
+        variant: "warning",
+      });
+    }
+  }, [token]);
 
   const handleDeleteIngredient = () => {
     setLoading(true);
     axios
-      .delete(`http://localhost:5555/ingredients/${id}` , {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      .delete(`${import.meta.env.VITE_API_URL}/ingredients/${id}`)
       .then(() => {
         setLoading(false);
         enqueueSnackbar('Ingrediente deletado com sucesso', { variant: 'success' });

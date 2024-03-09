@@ -16,14 +16,16 @@ const EditRecipe = () => {
 
   const token = localStorage.getItem('token');
 
-  if (!token) {
-    enqueueSnackbar('Faça login para deletar uma receita', { variant: 'warning' });
-    navigate('/login');
-  }
+  useEffect(() => {
+    if (token == 'undefined' || !token) {
+      navigate('/login');
+      enqueueSnackbar('Faça login para editar suas receitas', { variant: 'warning' });
+    }
+  }, [token, navigate, enqueueSnackbar]);
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`http://localhost:5555/recipes/${id}`, {
+    axios.get(`${import.meta.env.VITE_API_URL}/recipes/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -49,14 +51,14 @@ const EditRecipe = () => {
 
     setLoading(true);
     axios
-      .put(`http://localhost:5555/recipes/${id}`, {
+      .put(`${import.meta.env.VITE_API_URL}/recipes/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
       .then(() => {
         setLoading(false);
-        enqueueSnackbar('Recipe Edited successfully', { variant: 'success' });
+        enqueueSnackbar('Receita editada com sucesso', { variant: 'success' });
         navigate(`/recipes`);
       })
       .catch((error) => {
