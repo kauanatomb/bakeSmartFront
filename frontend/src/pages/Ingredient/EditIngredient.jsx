@@ -37,8 +37,7 @@ const EditIngredient = () => {
         setCategories(response.data);
         setLoading(false);
       })
-      .catch((error) => {
-        console.log("Error fetching data:", error);
+      .catch(() => {
         setLoading(false);
       });
   }, []);
@@ -49,8 +48,7 @@ const EditIngredient = () => {
       .get(`${import.meta.env.VITE_API_URL}/measurement_units`)
       .then((response) => {
         setUnits(response.data);
-      }).catch((error) => {
-        console.log("Error fetching data:", error);
+      }).catch(() => {
         setLoading(false);
       });
     }, []);
@@ -58,7 +56,11 @@ const EditIngredient = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${import.meta.env.VITE_API_URL}/ingredients/${id}`)
+      .get(`${import.meta.env.VITE_API_URL}/ingredients/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       .then((response) => {
         setName(response.data.name);
         setQuantity(response.data.quantity);
@@ -69,9 +71,12 @@ const EditIngredient = () => {
         setLoading(false);
       })
       .catch((error) => {
-        setLoading(false);
-        alert("An error happened. Please Check console");
-        console.log(error);
+        if (error.response && error.response.status === 401) {
+          navigate('/login');
+          enqueueSnackbar('Faça login para editar seu ingrediente', { variant: 'warning' });
+        } else {
+          setLoading(false);
+        }
       });
   }, [id]);
 
@@ -87,7 +92,12 @@ const EditIngredient = () => {
 
     setLoading(true);
     axios
-      .put(`${import.meta.env.VITE_API_URL}/ingredients/${id}`, data)
+      .put(`${import.meta.env.VITE_API_URL}/ingredients/${id}`, data
+      , {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then(() => {
         setLoading(false);
         enqueueSnackbar("Ingrediente editado com sucesso", {
@@ -95,10 +105,9 @@ const EditIngredient = () => {
         });
         navigate("/ingredients");
       })
-      .catch((error) => {
+      .catch(() => {
         setLoading(false);
         enqueueSnackbar("Error", { variant: "error" });
-        console.log(error);
       });
   };
 

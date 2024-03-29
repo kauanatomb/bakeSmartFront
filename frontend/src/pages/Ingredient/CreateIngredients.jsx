@@ -63,35 +63,33 @@ const CreateIngredients = () => {
       name,
       quantity,
       brand,
-      category: selectedCategory,
-      measurement_unit: selectedUnit,
+      category_id: selectedCategory,
+      measurement_unit_id: selectedUnit,
       price
     };
-  
-    if (token) {
-      setLoading(true);
-      axios
-        .post(`${import.meta.env.VITE_API_URL}/ingredients`, data, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        .then(() => {
-          setLoading(false);
-          enqueueSnackbar('Ingrediente criado com sucesso', { variant: 'success' });
-          navigate('/ingredients');
-        })
-        .catch((error) => {
+
+    setLoading(true);
+    axios
+      .post(`${import.meta.env.VITE_API_URL}/ingredients`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then(() => {
+        setLoading(false);
+        enqueueSnackbar('Ingrediente criado com sucesso', { variant: 'success' });
+        navigate('/ingredients');
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          navigate('/login');
+          enqueueSnackbar('Faça login para criar um ingrediente', { variant: 'warning' });
+        } else {
           setLoading(false);
           enqueueSnackbar('Erro ao criar ingrediente', { variant: 'error' });
-          console.error('Erro ao criar ingrediente:', error);
-        });
-    } else {
-      enqueueSnackbar('Faça login para criar um ingrediente', { variant: 'warning' });
-      navigate('/login');
-    }
-  };
-
+        }
+      });
+  }
   return (
     <div className='p-4'>
       <BackButton destination={"/ingredients"}/>
