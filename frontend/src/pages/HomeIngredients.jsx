@@ -25,17 +25,22 @@ const HomeIngredients = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/ingredients`)
-      .then((response) => {
-        setIngredients(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoading(false);
-      });
-  }, [token]);
+      axios
+        .get(`${import.meta.env.VITE_API_URL}/ingredients`)
+        .then((response) => {
+          setIngredients(response.data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            navigate('/login');
+            enqueueSnackbar('Faça login para ver seus ingredientes', { variant: 'warning' });
+          } else {
+            console.log(error);
+            setLoading(false);
+          }
+        });
+    }, [token]);
 
   return (
     <>

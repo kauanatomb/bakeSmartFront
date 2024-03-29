@@ -24,7 +24,11 @@ const DeleteIngredient = () => {
   const handleDeleteIngredient = () => {
     setLoading(true);
     axios
-      .delete(`${import.meta.env.VITE_API_URL}/ingredients/${id}`)
+      .delete(`${import.meta.env.VITE_API_URL}/ingredients/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then(() => {
         setLoading(false);
         enqueueSnackbar('Ingrediente deletado com sucesso', { variant: 'success' });
