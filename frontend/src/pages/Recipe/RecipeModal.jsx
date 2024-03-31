@@ -17,7 +17,7 @@ const RecipeModal = ({ recipe, onClose, index }) => {
           onClick={onClose}
         />
         <h2 className='w-fit px-4 py-1 bg-red-300 rounded-lg'>
-          {recipe.createdAt}
+          {recipe.created_at.split('T')[0].split('-').reverse().join('/')}
         </h2>
         <h4 className='my-2 text-gray-500'>{index + 1}</h4>
         <div className='flex justify-start items-center gap-x-2'>
@@ -26,7 +26,7 @@ const RecipeModal = ({ recipe, onClose, index }) => {
         </div>
         <div className='flex justify-start items-center gap-x-2'>
         <IoTimeOutline className='text-red-300 text-2xl' />
-          <h2 className='my-1'>{recipe.cookTime}</h2>
+          <h2 className='my-1'>{recipe.cook_time}</h2>
         </div>
         <p className='flex justify-start items-center gap-x-2'>
         <PiBookOpenTextLight className='text-red-300 text-2xl'/>
@@ -34,11 +34,11 @@ const RecipeModal = ({ recipe, onClose, index }) => {
         </p>
         <div className='mt-4'>
           <h3 className='text-lg font-semibold mb-2'>Ingredientes:</h3>
-          {recipe?.ingredients && recipe.ingredients.length > 0 ? (
+          {recipe?.recipe_ingredients && recipe.recipe_ingredients.length > 0 ? (
           <ul>
-          {recipe?.ingredients?.map((ingredient, index) => (
+          {recipe?.recipe_ingredients?.map((recipe_ingredient, index) => (
             <li key={index} className='mb-2'>
-              {ingredient.name} - {ingredient.quantity} ({ingredient.unitOfMeasure.unit})
+              {recipe_ingredient.ingredient.name} - {recipe_ingredient.quantity} ({recipe_ingredient.measurement_unit.name})
             </li>
           ))}
         </ul>) : (

@@ -27,7 +27,7 @@ const EditIngredient = () => {
         variant: "warning",
       });
     }
-  }, [token]);
+  }, [token, enqueueSnackbar, navigate]);
 
   useEffect(() => {
     setLoading(true);
@@ -58,7 +58,7 @@ const EditIngredient = () => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/ingredients/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: token
         }
       })
       .then((response) => {

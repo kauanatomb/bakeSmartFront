@@ -28,7 +28,7 @@ const CreateIngredients = () => {
         variant: "warning",
       });
     }
-  }, [token]);
+  }, [token, enqueueSnackbar, navigate]);
 
   useEffect(() => {
     setLoading(true);

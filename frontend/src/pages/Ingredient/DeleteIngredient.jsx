@@ -19,7 +19,7 @@ const DeleteIngredient = () => {
         variant: "warning",
       });
     }
-  }, [token]);
+  }, [token, enqueueSnackbar, navigate]);
 
   const handleDeleteIngredient = () => {
     setLoading(true);
@@ -35,9 +35,13 @@ const DeleteIngredient = () => {
         navigate('/ingredients');
       })
       .catch((error) => {
-        setLoading(false);
-        enqueueSnackbar('Error', { variant: 'error' });
-        console.log(error);
+        if (error.response && error.response.status === 401) {
+          navigate('/login');
+          enqueueSnackbar('Faça login para excluir um ingrediente', { variant: 'warning' });
+        } else {
+          setLoading(false);
+          enqueueSnackbar('Erro ao excluir o ingrediente', { variant: 'error' });
+        }
       });
   };
   

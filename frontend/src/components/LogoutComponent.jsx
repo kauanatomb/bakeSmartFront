@@ -1,20 +1,25 @@
 import axios from 'axios';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 const LogoutButton = () => {
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const { enqueueSnackbar } = useSnackbar();
 
-  if (!token) {
-    navigate('/login');
-  }
+  useEffect(() => {
+    if (token == 'undefined' || !token) {
+      navigate('/login');
+      enqueueSnackbar('Faça login para visualizar seus ingredientes', { variant: 'warning' });
+    }
+  }, [token, navigate, enqueueSnackbar]);
 
   const handleLogout = () => {
-    axios.post('http://localhost:5555/user/logout', null, {
+    axios.delete(`${import.meta.env.VITE_API_URL}/logout`, {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: token
       }
     })
     .then(() => {

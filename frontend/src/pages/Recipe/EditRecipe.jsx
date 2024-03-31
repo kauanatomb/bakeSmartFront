@@ -9,6 +9,7 @@ const EditRecipe = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [cookTime, setCookTime] = useState('');
+  const [ingredientsList, setIngredientsList] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const {id} = useParams();
@@ -27,13 +28,13 @@ const EditRecipe = () => {
     setLoading(true);
     axios.get(`${import.meta.env.VITE_API_URL}/recipes/${id}`, {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: token
       }
     })
     .then((response) => {
-        setName(response.data.data.name);
-        setDescription(response.data.data.description);
-        setCookTime(response.data.data.cookTime);
+        setName(response.data.name);
+        setDescription(response.data.description);
+        setCookTime(response.data.cook_time);
         setLoading(false);
       }).catch((error) => {
         setLoading(false);
@@ -46,14 +47,14 @@ const EditRecipe = () => {
     const data = {
       name,
       description,
-      cookTime
+      cook_time: cookTime
     };
 
     setLoading(true);
     axios
-      .put(`${import.meta.env.VITE_API_URL}/recipes/${id}`, {
+      .put(`${import.meta.env.VITE_API_URL}/recipes/${id}`, data, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: token
         }
       })
       .then(() => {
@@ -62,9 +63,13 @@ const EditRecipe = () => {
         navigate(`/recipes`);
       })
       .catch((error) => {
-        setLoading(false);
-        enqueueSnackbar('Error', { variant: 'error' });
-        console.log(error);
+        if (error.response && error.response.status === 401) {
+          navigate('/login');
+          enqueueSnackbar('Faça login para atualizar uma receita', { variant: 'warning' });
+        } else {
+          setLoading(false);
+          enqueueSnackbar('Erro ao atualizar receita', { variant: 'error' });
+        }
       });
   };
 

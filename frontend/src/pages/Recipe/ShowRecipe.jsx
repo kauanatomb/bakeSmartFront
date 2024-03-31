@@ -16,28 +16,35 @@ const ShowRecipe = () => {
   const { enqueueSnackbar } = useSnackbar();
   const token = localStorage.getItem('token');
 
-  if (!token) {
-    enqueueSnackbar('Faça login para deletar uma receita', { variant: 'warning' });
-    navigate('/login');
-  }
+  useEffect(() => {
+    if (token == 'undefined' || !token) {
+      navigate('/login');
+      enqueueSnackbar('Faça login para visualizar suas receitas', { variant: 'warning' });
+    }
+  }, [token, navigate, enqueueSnackbar]);
 
   useEffect(() => {
     setLoading(true);
     axios
       .get(`${import.meta.env.VITE_API_URL}/recipes/${id}` , {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: token
         }
       })
       .then((response) => {
-        setRecipe(response.data.data);
+        setRecipe(response.data);
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
-        setLoading(false);
+        if (error.response && error.response.status === 401) {
+          navigate('/login');
+          enqueueSnackbar('Faça login para ver a receita', { variant: 'warning' });
+        } else {
+          setLoading(false);
+          enqueueSnackbar('Erro ao ver a receita', { variant: 'error' });
+        }
       });
-  }, [id]);
+  }, [id, token, enqueueSnackbar, navigate]);
 
   return (
     <div className='p-4'>
@@ -65,7 +72,7 @@ const ShowRecipe = () => {
           </div>
           <div className='my-2'>
             <span className='text-xl font-semibold text-gray-600'>Tempo de preparo:</span>
-            <span className='ml-2'>{recipe?.cookTime}</span>
+            <span className='ml-2'>{recipe?.cook_time}</span>
           </div>
           <div className='my-2'>
             <span className='text-xl font-semibold text-gray-600'>Descrição:</span>
@@ -73,7 +80,7 @@ const ShowRecipe = () => {
           </div>
           <div className='my-2'>
             <span className='text-xl font-semibold text-gray-600'>Ingredientes:</span>
-            {recipe?.ingredients && recipe.ingredients.length > 0 ? (
+            {recipe?.recipe_ingredients && recipe.recipe_ingredients.length > 0 ? (
               <div className='ml-2'>
                 <table className='border-collapse border border-gray-500'>
                   <thead>
@@ -84,15 +91,15 @@ const ShowRecipe = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {recipe?.ingredients?.map((ingredient, index) => (
+                    {recipe?.recipe_ingredients?.map((recipe_ingredient, index) => (
                       <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
-                        <td className='border border-gray-500 p-2'>{ingredient.name}</td>
-                        <td className='border border-gray-500 p-2'>{ingredient.quantity}</td>
-                        <td className='border border-gray-500 p-2'>{ingredient.unitOfMeasure.unit}</td>
-                        <Link to={`/recipes/${recipe.id}/ingredients/edit/${ingredient._id}`}>
+                        <td className='border border-gray-500 p-2'>{recipe_ingredient.ingredient.name}</td>
+                        <td className='border border-gray-500 p-2'>{recipe_ingredient.quantity}</td>
+                        <td className='border border-gray-500 p-2'>{recipe_ingredient.measurement_unit.name}</td>
+                        <Link to={`/recipes/${recipe.id}/ingredients/edit/${recipe_ingredient.id}`}>
                           <AiOutlineEdit className='text-2xl text-yellow-600 hover:text-yellow-400' />
                         </Link>
-                        <Link to={`/recipes/${recipe._id}/ingredients/delete/${ingredient._id}`}>
+                        <Link to={`/recipes/${recipe.id}/ingredients/delete/${recipe_ingredient.id}`}>
                           <MdOutlineDelete className='text-2xl text-red-600 hover:text-red-400' />
                         </Link>
                       </tr>
@@ -105,8 +112,8 @@ const ShowRecipe = () => {
           </div>
           <div className='my-2'>
             <span className='text-xl font-semibold text-gray-600'>Valor receita:</span>
-            {recipe?.ingredients && recipe.ingredients.length > 0 ? (
-              <span className='ml-2'>{recipe?.costRecipe} Reais</span>
+            {recipe?.recipe_ingredients && recipe.recipe_ingredients.length > 0 ? (
+              <span className='ml-2'>{recipe?.cost_recipe} Reais</span>
             ) : (
               <span> Essa receita não possui ingredientes </span>
             )}

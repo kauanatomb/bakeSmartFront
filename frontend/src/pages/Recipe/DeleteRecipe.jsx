@@ -11,35 +11,37 @@ const DeleteRecipe = () => {
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleDeleteRecipe = () => {
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
-    useEffect(() => {
-      if (token == 'undefined' || !token) {
-        navigate('/login');
-        enqueueSnackbar('Faça login para deletar suas receitas', { variant: 'warning' });
-      }
-    }, [token]);
-  
-    useEffect(() => {
-      setLoading(true);
-      axios
-        .delete(`${import.meta.env.VITE_API_URL}/recipes/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        .then(() => {
+  useEffect(() => {
+    if (token === 'undefined' || !token) {
+      navigate('/login');
+      enqueueSnackbar('Faça login para deletar suas receitas', { variant: 'warning' });
+    }
+  }, [token, enqueueSnackbar, navigate]);
+
+  const handleDeleteRecipe = () => {
+    setLoading(true);
+    axios
+      .delete(`${import.meta.env.VITE_API_URL}/recipes/${id}`, {
+        headers: {
+          Authorization: token
+        }
+      })
+      .then(() => {
+        setLoading(false);
+        enqueueSnackbar('Receita deletada com sucesso', { variant: 'success' });
+        navigate('/recipes');
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          navigate('/login');
+          enqueueSnackbar('Faça login para excluir uma receita', { variant: 'warning' });
+        } else {
           setLoading(false);
-          enqueueSnackbar('Receita deletada com sucesso', { variant: 'success' });
-          navigate('/recipes');
-        })
-        .catch((error) => {
-          setLoading(false);
-          enqueueSnackbar('Error', { variant: 'error' });
-          console.log(error);
-        });
-    }, [token]);
+          enqueueSnackbar('Erro ao excluir a receita', { variant: 'error' });
+        }
+      });
   };
 
   return (

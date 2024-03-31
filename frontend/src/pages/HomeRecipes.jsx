@@ -19,7 +19,7 @@ const HomeRecipes = () => {
   useEffect(() => {
     if (token == 'undefined' || !token) {
       navigate('/login');
-      enqueueSnackbar('Faça login para vesualizar suas receitas', { variant: 'warning' });
+      enqueueSnackbar('Faça login para visualizar suas receitas', { variant: 'warning' });
     }
   }, [token, navigate, enqueueSnackbar]);
 
@@ -28,18 +28,24 @@ const HomeRecipes = () => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/recipes`, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: token
         }
       })
       .then((response) => {
-        setRecipes(response.data.data);
+        setRecipes(response.data);
+
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
-        setLoading(false);
+        if (error.response || error.response.status === 401) {
+          navigate('/login');
+          enqueueSnackbar('Faça login para ver suas receitas', { variant: 'warning' });
+        } else {
+          console.log(error);
+          setLoading(false);
+        }
       });
-  }, [token]);
+  }, [token, enqueueSnackbar, navigate]);
 
   return (
     <>
