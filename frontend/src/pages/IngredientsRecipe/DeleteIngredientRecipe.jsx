@@ -11,22 +11,31 @@ const DeleteIngredientRecipe = () => {
   const navigate = useNavigate();
   const { recipeId, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5555/ingredients/${id}`)
+      .get(`${import.meta.env.VITE_API_URL}/recipe_ingredients/${id}`, {
+        headers: {
+          Authorization: token
+        }
+      })
       .then((response) => {
-        setIngredientName(response.data.name);
+        setIngredientName(response.data.ingredient.name);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, [id]);
+  }, [id, token]);
 
   const handleDeleteIngredientRecipe = () => {
     setLoading(true);
     axios
-      .delete(`http://localhost:5555/recipes/${recipeId}/ingredients/${id}`)
+      .delete(`${import.meta.env.VITE_API_URL}/recipe_ingredients/${id}`, {
+        headers: {
+          Authorization: token
+        }
+      })
       .then(() => {
         setLoading(false);
         enqueueSnackbar(`Ingrediente ${ingredientName} deletado com sucesso`, { variant: 'success' });

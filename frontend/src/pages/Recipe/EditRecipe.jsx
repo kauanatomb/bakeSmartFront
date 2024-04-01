@@ -36,18 +36,24 @@ const EditRecipe = () => {
         setDescription(response.data.description);
         setCookTime(response.data.cook_time);
         setLoading(false);
-      }).catch((error) => {
-        setLoading(false);
-        alert('An error happened. Please Check console');
-        console.log(error);
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          navigate('/login');
+          enqueueSnackbar('Faça login para editar uma receita', { variant: 'warning' });
+        } else {
+          setLoading(false);
+          enqueueSnackbar('Erro ao editar receita', { variant: 'error' });
+        }
       });
-  }, [id, token])
+  }, [id, token, enqueueSnackbar, navigate]);
   
   const handleEditRecipe = () => {
     const data = {
       name,
       description,
-      cook_time: cookTime
+      cook_time: cookTime,
+      recipe_ingredients_attributes: ingredientsList
     };
 
     setLoading(true);

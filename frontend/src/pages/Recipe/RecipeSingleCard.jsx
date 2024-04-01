@@ -15,7 +15,7 @@ const RecipeSingleCard = ({ recipe, index }) => {
       <h2 className='absolute top-1 right-2 px-4 py-1 bg-red-300 rounded-lg'>
         {recipe.created_at.split('T')[0].split('-').reverse().join('/')}
       </h2>
-      <h4 className='my-2 text-gray-500'>{index + 1}</h4>
+      <h4 className='my-2 text-gray-500'>{recipe.id}</h4>
       <div className='flex justify-start items-center gap-x-2'>
         <PiBookOpenTextLight className='text-red-300 text-2xl' />
         <h2 className='my-1'>{recipe.name}</h2>

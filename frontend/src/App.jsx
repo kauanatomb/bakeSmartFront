@@ -33,7 +33,7 @@ const App = () => {
         <Route path='/recipes/delete/:id' element={<DeleteRecipe/>} />
         <Route path='/recipes/:id/ingredients' element={<CreateIngredientsRecipe/>} />
         <Route path='/recipes/:recipeId/ingredients/delete/:id' element={<DeleteIngredientRecipe/>} />
-        <Route path='/recipes/:recipeId/ingredients/edit' element={<EditIngredientRecipe/>} />
+        <Route path='/recipes/:recipeId/ingredients/edit/:id' element={<EditIngredientRecipe/>} />
       </Routes>
     </SnackbarProvider>
   )

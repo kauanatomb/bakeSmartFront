@@ -9,30 +9,35 @@ const EditIngredientRecipe = () => {
 
   const [selectedIngredient, setSelectedIngredient] = useState('');
   const [ingredients, setIngredients] = useState([]);
-  const [selectedUnitOfMeasure, setSelectedUnitOfMeasure] = useState('');
-  const [unitOfMeasures, setUnitOfMeasures] = useState([]);
+  const [selectedMeasurementUnit, setSelectedMeasurementUnit] = useState('');
+  const [measurementUnits, setMeasurementUnits] = useState([]);
   const [quantity, setQuantity] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const { id } = useParams();
+  const { recipeId, id } = useParams();
   const token = localStorage.getItem('token');
 
-  if (!token) {
-    enqueueSnackbar('Faça login para criar um ingrediente', { variant: 'warning' });
-    navigate('/login');
-  }
+  useEffect(() => {
+    if (token == "undefined" || !token) {
+      navigate("/login");
+      enqueueSnackbar("Faça login para editar seus ingredientes", {
+        variant: "warning",
+      });
+    }
+  }, [token, navigate, enqueueSnackbar]);
 
   useEffect(() => {
     setLoading(true);
     axios
-      .get('http://localhost:5555/ingredients', {
+      .get(`${import.meta.env.VITE_API_URL}/ingredients`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: token,
         },
       })
       .then((response) => {
-        setIngredients(response.data.data);
+        setIngredients(response.data);
+        console.log(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -44,9 +49,10 @@ const EditIngredientRecipe = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get('http://localhost:5555/unitOfMeasures')
+      .get(`${import.meta.env.VITE_API_URL}/measurement_units`)
       .then((response) => {
-        setUnitOfMeasures(response.data.unitOfMeasures);
+        setMeasurementUnits(response.data);
+        console.log(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -58,11 +64,16 @@ const EditIngredientRecipe = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:5555/recipes/${id}/ingredients`)
+      .get(`${import.meta.env.VITE_API_URL}/recipe_ingredients/${id}`, {
+        headers: {
+          Authorization: token
+        }
+      })
       .then((response) => {
-        setSelectedIngredient(response.data.data.ingredientId);
-        setSelectedUnitOfMeasure(response.data.data.unitOfMeasureId);
-        setQuantity(response.data.data.quantity);
+        setSelectedIngredient(response.data.ingredient_id);
+        setSelectedMeasurementUnit(response.data.measurement_unit_id);
+        setQuantity(response.data.quantity);
+        console.log(response.data);
         setLoading(false);
       }
       )
@@ -71,22 +82,26 @@ const EditIngredientRecipe = () => {
         setLoading(false);
       }
       );
-  }, [id]);
+  }, [id, token]);
 
   const handleEditIngredientsRecipe = () => {
     const data = {
-      ingredientId: selectedIngredient,
-      unitOfMeasureId: selectedUnitOfMeasure,
+      ingredient_id: selectedIngredient,
+      measurement_unit_id: selectedMeasurementUnit,
       quantity
     }
 
     setLoading(true);
     axios
-      .put(`http://localhost:5555/recipes/${id}/ingredients`, data)
+      .put(`${import.meta.env.VITE_API_URL}/recipe_ingredients/${id}`, data , {
+        headers: {
+          Authorization: token
+        }
+      })
       .then(() => {
         setLoading(false);
         enqueueSnackbar('Ingredientes atualizados com sucesso', { variant: 'success' });
-        navigate(`/recipes/details/${id}`);
+        navigate(`/recipes/details/${recipeId}`);
       })
       .catch((error) => {
         setLoading(false);
@@ -116,17 +131,17 @@ const EditIngredientRecipe = () => {
           </select>
         </div>
         <div className='form-group'>
-          <label htmlFor='unitOfMeasure'>Unidade de Medida</label>
+          <label htmlFor='measurementUnit'>Unidade de Medida</label>
           <select
             className='form-control'
-            id='unitOfMeasure'
-            value={selectedUnitOfMeasure}
-            onChange={(event) => setSelectedUnitOfMeasure(event.target.value)}
+            id='measurementUnit'
+            value={selectedMeasurementUnit}
+            onChange={(event) => setSelectedMeasurementUnit(event.target.value)}
           >
             <option value=''>Selecione uma unidade de medida</option>
-            {unitOfMeasures.map((unitOfMeasure) => (
-              <option key={unitOfMeasure.id} value={unitOfMeasure.id}>
-                {unitOfMeasure.unit}
+            {measurementUnits.map((measurementUnit) => (
+              <option key={measurementUnit.id} value={measurementUnit.id}>
+                {measurementUnit.name}
               </option>
             ))}
           </select>
