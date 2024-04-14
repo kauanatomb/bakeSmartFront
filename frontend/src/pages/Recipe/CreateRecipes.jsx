@@ -11,10 +11,7 @@ const CreateRecipes = () => {
   const [cookTime, setCookTime] = useState("");
   const [ingredients, setIngredients] = useState([]);
   const [measurementUnits, setMeasurementUnits] = useState([]);
-  const [selectedMeasurementUnit, setSelectedMeasurementUnit] = useState("");
-  const [selectedIngredient, setSelectedIngredient] = useState("");
   const [ingredientsList, setIngredientsList] = useState([]);
-  const [quantity, setQuantity] = useState("");
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
