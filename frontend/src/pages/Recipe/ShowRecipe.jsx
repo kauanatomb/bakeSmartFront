@@ -57,12 +57,6 @@ const ShowRecipe = () => {
           <BackButton destination={`/recipes`} />
           <h1 className="text-3xl my-4">Veja sua receita</h1>
         </div>
-        <div className="flex items-center justify-center">
-          <Link to={`/recipes/${id}/ingredients`} className="flex items-center">
-            <MdOutlineAddBox className="text-sky-800 text-4xl mr-2" />
-            <h1>Adicione ingredientes</h1>
-          </Link>
-        </div>
       </div>
       {loading ? (
         <Spinner />
@@ -84,36 +78,25 @@ const ShowRecipe = () => {
             </span>
             <span className="ml-2">{recipe?.description}</span>
           </div>
-          <div className="my-2">
+          <div className="mt-4">
             <span className="text-xl font-semibold text-gray-600">
               Ingredientes:
             </span>
-            {recipe?.recipe_ingredients &&
-            recipe.recipe_ingredients.length > 0 ? (
+            {recipe?.recipe_ingredients && recipe.recipe_ingredients.length > 0 ? (
               <div className="ml-2">
-                {recipe?.recipe_ingredients?.map(
-                  (recipe_ingredient, index) => (
-                    <div key={index}>
-                      <div className=" p-2">
-                        {recipe_ingredient.ingredient.name}
-                        {recipe_ingredient.quantity}
-                        {recipe_ingredient.measurement_unit.name}
-                        <Link
-                          to={`/recipes/${recipe.id}/ingredients/edit/${recipe_ingredient.id}`}
-                        >
-                          <AiOutlineEdit className="text-2xl text-yellow-600 hover:text-yellow-400" />
-                        </Link>
-                      </div>
-                      <div>
-                        <Link
-                          to={`/recipes/${recipe.id}/ingredients/delete/${recipe_ingredient.id}`}
-                        >
-                          <MdOutlineDelete className="text-2xl text-red-600 hover:text-red-400" />
-                        </Link>
-                      </div>
-                    </div>
-                  )
-                )}
+                <ul>
+                  {recipe?.recipe_ingredients?.map((recipe_ingredient, index) => (
+                    <li key={index} className='mb-2 flex items-center mb-2'>
+                      {recipe_ingredient.ingredient.name} - {recipe_ingredient.quantity} ({recipe_ingredient.measurement_unit.name})
+                      <Link
+                        key={index}
+                        to={`/recipes/${recipe.id}/ingredients/delete/${recipe_ingredient.id}`}
+                      >
+                        <MdOutlineDelete className="text-2xl text-red-600 hover:text-red-400" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ) : (
               <span> Essa receita não possui ingredientes </span>
@@ -125,7 +108,7 @@ const ShowRecipe = () => {
             </span>
             {recipe?.recipe_ingredients &&
             recipe.recipe_ingredients.length > 0 ? (
-              <span className="ml-2">{recipe?.cost_recipe} Reais</span>
+              <span className="ml-2">{recipe?.total_cost} Reais</span>
             ) : (
               <span> Essa receita não possui ingredientes </span>
             )}

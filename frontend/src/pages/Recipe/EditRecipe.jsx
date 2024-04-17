@@ -106,7 +106,12 @@ const EditRecipe = () => {
       name,
       description,
       cook_time: cookTime,
-      recipe_ingredients_attributes: ingredientsList
+      recipe_ingredients_attributes: ingredientsList.map(ingredient => ({
+        id: ingredient.id,
+        ingredient_id: ingredient.ingredient ? ingredient.ingredient.id : ingredient.ingredient_id,
+        measurement_unit_id: ingredient.measurement_unit ? ingredient.measurement_unit.id : ingredient.measurement_unit_id,
+        quantity: ingredient.quantity
+      }))
     };
 
     setLoading(true);
@@ -119,7 +124,7 @@ const EditRecipe = () => {
       .then(() => {
         setLoading(false);
         enqueueSnackbar('Receita editada com sucesso', { variant: 'success' });
-        navigate(`/recipes`);
+        navigate(`/recipes/details/${id}`);
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
