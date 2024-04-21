@@ -1,6 +1,8 @@
 import { AiOutlineClose } from 'react-icons/ai';
 import { PiBookOpenTextLight, PiCake } from 'react-icons/pi';
 import { IoTimeOutline } from 'react-icons/io5';
+import { MdOutlineAttachMoney } from "react-icons/md";
+import { Link } from 'react-router-dom';
 
 const RecipeModal = ({ recipe, onClose, index }) => {
   return (
@@ -32,15 +34,24 @@ const RecipeModal = ({ recipe, onClose, index }) => {
         <PiBookOpenTextLight className='text-red-300 text-2xl'/>
           <h2 className='my-1'>{recipe.description}</h2>
         </p>
+        <p className='flex justify-start items-center gap-x-2'>
+        <MdOutlineAttachMoney className='text-red-300 text-2xl'/>
+          <h2 className='my-1'>{recipe.total_cost}</h2>
+        </p>
         <div className='mt-4'>
           <h3 className='text-lg font-semibold mb-2'>Ingredientes:</h3>
           {recipe?.recipe_ingredients && recipe.recipe_ingredients.length > 0 ? (
           <ul>
-          {recipe?.recipe_ingredients?.map((recipe_ingredient, index) => (
+          {recipe?.recipe_ingredients?.slice(0, 3).map((recipe_ingredient, index) => (
             <li key={index} className='mb-2'>
               {recipe_ingredient.ingredient.name} - {recipe_ingredient.quantity} ({recipe_ingredient.measurement_unit.name})
             </li>
           ))}
+          {recipe?.recipe_ingredients?.length > 3 && (
+            <Link to={`/recipes/details/${recipe.id}`} className='text-blue-500'>
+              Ver mais
+            </Link>
+          )}
         </ul>) : (
           <span> Essa receita não possui ingredientes </span>
         )}

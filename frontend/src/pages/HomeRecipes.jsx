@@ -3,9 +3,7 @@ import axios from 'axios';
 import Spinner from '../components/Spinner';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
-import { AiOutlineEdit } from 'react-icons/ai';
-import { BsInfoCircle } from 'react-icons/bs';
-import { MdOutlineAddBox, MdOutlineDelete } from 'react-icons/md';
+import { MdOutlineAddBox } from 'react-icons/md';
 import RecipesCard from './Recipe/RecipesCard.jsx';
 import Menu from '../components/Menu.jsx'
 
@@ -33,7 +31,7 @@ const HomeRecipes = () => {
       })
       .then((response) => {
         setRecipes(response.data);
-
+        console.log(response.data);
         setLoading(false);
       })
       .catch((error) => {

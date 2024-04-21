@@ -78,7 +78,18 @@ const ShowRecipe = () => {
             </span>
             <span className="ml-2">{recipe?.description}</span>
           </div>
-          <div className="mt-4">
+          <div className="my-2">
+            <span className="text-xl font-semibold text-gray-600">
+              Valor receita:
+            </span>
+            {recipe?.recipe_ingredients &&
+            recipe.recipe_ingredients.length > 0 ? (
+              <span className="ml-2">{recipe?.total_cost} Reais</span>
+            ) : (
+              <span> Essa receita não possui ingredientes </span>
+            )}
+          </div>
+          <div className="my-2">
             <span className="text-xl font-semibold text-gray-600">
               Ingredientes:
             </span>
@@ -86,7 +97,7 @@ const ShowRecipe = () => {
               <div className="ml-2">
                 <ul>
                   {recipe?.recipe_ingredients?.map((recipe_ingredient, index) => (
-                    <li key={index} className='mb-2 flex items-center mb-2'>
+                    <li key={index} className='mb-2 flex items-center'>
                       {recipe_ingredient.ingredient.name} - {recipe_ingredient.quantity} ({recipe_ingredient.measurement_unit.name})
                       <Link
                         key={index}
@@ -98,17 +109,6 @@ const ShowRecipe = () => {
                   ))}
                 </ul>
               </div>
-            ) : (
-              <span> Essa receita não possui ingredientes </span>
-            )}
-          </div>
-          <div className="my-2">
-            <span className="text-xl font-semibold text-gray-600">
-              Valor receita:
-            </span>
-            {recipe?.recipe_ingredients &&
-            recipe.recipe_ingredients.length > 0 ? (
-              <span className="ml-2">{recipe?.total_cost} Reais</span>
             ) : (
               <span> Essa receita não possui ingredientes </span>
             )}
