@@ -11,6 +11,11 @@ const EditRecipe = () => {
   const [cookTime, setCookTime] = useState('');
   const [ingredientsList, setIngredientsList] = useState([]);
   const [ingredients, setIngredients] = useState([]);
+  const [newIngredient, setNewIngredient] = useState({
+    ingredient_id: '',
+    measurement_unit_id: '',
+    quantity: '',
+  });
   const [measurementUnits, setMeasurementUnits] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -70,6 +75,7 @@ const EditRecipe = () => {
         setDescription(response.data.description);
         setCookTime(response.data.cook_time);
         setIngredientsList(response.data.recipe_ingredients);
+        console.log(response.data.recipe_ingredients);
         setLoading(false);
       })
       .catch((error) => {
@@ -86,13 +92,12 @@ const EditRecipe = () => {
   const handleAddIngredient = (event) => {
     event.preventDefault();
     setIngredientsList([
-      ...ingredientsList,
-      {
-        ingredient_id: "",
-        measurement_unit_id: "",
-        quantity: "",
-      },
-    ]);
+      ...ingredientsList, newIngredient]);
+    setNewIngredient({
+      ingredient_id: '',
+      measurement_unit_id: '',
+      quantity: '',
+    });
   };
 
   const handleIngredientChange = (index, fieldName, event) => {
@@ -189,6 +194,7 @@ const EditRecipe = () => {
                 <select
                   value={ingredientList.ingredient ? ingredientList.ingredient.id : ingredientList.ingredient_id}
                   onChange={(event) =>
+                    console.log(event.target.value) &&
                     handleIngredientChange(index, "ingredient_id", event)
                   }
                   className="form-select border border-gray-500 px-4 py-2 w-full"
