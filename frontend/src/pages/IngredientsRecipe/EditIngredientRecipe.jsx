@@ -32,7 +32,7 @@ const EditIngredientRecipe = () => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/ingredients`, {
         headers: {
-          Authorization: token,
+          Authorization: `Bearer ${token}`
         },
       })
       .then((response) => {
@@ -66,7 +66,7 @@ const EditIngredientRecipe = () => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/recipe_ingredients/${id}`, {
         headers: {
-          Authorization: token
+          Authorization: `Bearer ${token}`
         }
       })
       .then((response) => {
@@ -95,7 +95,7 @@ const EditIngredientRecipe = () => {
     axios
       .put(`${import.meta.env.VITE_API_URL}/recipe_ingredients/${id}`, data , {
         headers: {
-          Authorization: token
+          Authorization: `Bearer ${token}`
         }
       })
       .then(() => {

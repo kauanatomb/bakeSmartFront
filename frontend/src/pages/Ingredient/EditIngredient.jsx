@@ -58,7 +58,7 @@ const EditIngredient = () => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/ingredients/${id}`, {
         headers: {
-          Authorization: token
+          Authorization: `Bearer ${token}`
         }
       })
       .then((response) => {

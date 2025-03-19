@@ -25,7 +25,7 @@ const DeleteRecipe = () => {
     axios
       .delete(`${import.meta.env.VITE_API_URL}/recipes/${id}`, {
         headers: {
-          Authorization: token
+          Authorization: `Bearer ${token}`
         }
       })
       .then(() => {

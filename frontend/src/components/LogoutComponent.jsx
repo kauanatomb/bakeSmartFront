@@ -19,7 +19,7 @@ const LogoutButton = () => {
   const handleLogout = () => {
     axios.delete(`${import.meta.env.VITE_API_URL}/logout`, {
       headers: {
-        Authorization: token
+        Authorization: `Bearer ${token}`
       }
     })
     .then(() => {

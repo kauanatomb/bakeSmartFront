@@ -23,9 +23,14 @@ const LoginUser = () => {
     .post(`${import.meta.env.VITE_API_URL}/login`, { user: user })
       .then((response) => {
         setLoading(false);
-        localStorage.setItem('token', response.headers['authorization']);
-        enqueueSnackbar('Login realizado com sucesso', { variant: 'success' });
-        navigate('/recipes');
+        const token = response.headers['authorization'].split(' ')[1];
+        if (token) {
+          localStorage.setItem('token', token);
+        } else {
+          enqueueSnackbar("Erro ao obter token", { variant: "error" });
+        }
+        enqueueSnackbar("Login realizado com sucesso", { variant: "success" });
+        navigate("/recipes");
       })
       .catch((error) => {
         setLoading(false);

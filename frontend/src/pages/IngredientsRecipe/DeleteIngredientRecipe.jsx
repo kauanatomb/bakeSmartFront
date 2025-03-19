@@ -17,7 +17,7 @@ const DeleteIngredientRecipe = () => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/recipe_ingredients/${id}`, {
         headers: {
-          Authorization: token
+          Authorization: `Bearer ${token}`
         }
       })
       .then((response) => {
@@ -33,7 +33,7 @@ const DeleteIngredientRecipe = () => {
     axios
       .delete(`${import.meta.env.VITE_API_URL}/recipe_ingredients/${id}`, {
         headers: {
-          Authorization: token
+          Authorization: `Bearer ${token}`
         }
       })
       .then(() => {

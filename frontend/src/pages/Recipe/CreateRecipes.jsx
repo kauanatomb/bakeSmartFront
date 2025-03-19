@@ -23,7 +23,7 @@ const CreateRecipes = () => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/ingredients`, {
         headers: {
-          Authorization: token,
+          Authorization: `Bearer ${token}`
         },
       })
       .then((response) => {
@@ -83,7 +83,7 @@ const CreateRecipes = () => {
     axios
       .post(`${import.meta.env.VITE_API_URL}/recipes`, data, {
         headers: {
-          Authorization: token,
+          Authorization: `Bearer ${token}`
         },
       })
       .then((response) => {

@@ -14,23 +14,25 @@ const CreateUser = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleSignupUser = () => {
-    const user = {
-      email,
-      name,
-      password,
-    };
 
     setLoading(true);
-    axios.post(`${import.meta.env.VITE_API_URL}/signup`, { user: user })
+    axios.post(`${import.meta.env.VITE_API_URL}/signup`, {
+      user: { email, name, password }
+    })
       .then((response) => {
         setLoading(false);
-        localStorage.setItem('token', response.headers['authorization']);
+        const token = response.headers['authorization'].split(' ')[1];
+        if (token) {
+          localStorage.setItem('token', token);
+        } else {
+          enqueueSnackbar("Erro ao obter token", { variant: "error" });
+        }
         enqueueSnackbar("Login realizado com sucesso", { variant: "success" });
         navigate("/recipes");
       })
       .catch((error) => {
         setLoading(false);
-        enqueueSnackbar("Erro ao criar usuário. Verifique suas credenciais.", {
+        enqueueSnackbar("Erro ao criar usuário. Fale com um de nossos desenvolvedores.", {
           variant: "error",
         });
         console.error("Erro ao criar usuário:", error);
