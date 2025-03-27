@@ -39,7 +39,11 @@ const CreateRecipes = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${import.meta.env.VITE_API_URL}/measurement_units`)
+      .get(`${import.meta.env.VITE_API_URL}/measurement_units`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       .then((response) => {
         setMeasurementUnits(response.data);
         setLoading(false);
