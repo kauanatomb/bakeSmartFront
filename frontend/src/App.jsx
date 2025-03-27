@@ -20,7 +20,7 @@ const App = () => {
   return (
     <SnackbarProvider>
       <Routes>
-        <Route path='/login' element={<LoginUser/>}/>
+        <Route path='/' element={<LoginUser/>}/>
         <Route path='/signup' element={<CreateUser/>}/>
         <Route path='/recipes' element={<HomeRecipes/>} />
         <Route path='/ingredients' element={<HomeIngredients/>} />
