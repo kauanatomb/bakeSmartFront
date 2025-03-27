@@ -52,7 +52,11 @@ const EditRecipe = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${import.meta.env.VITE_API_URL}/measurement_units`)
+      .get(`${import.meta.env.VITE_API_URL}/measurement_units`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       .then((response) => {
         setMeasurementUnits(response.data);
         setLoading(false);
@@ -101,9 +105,12 @@ const EditRecipe = () => {
   };
 
   const handleIngredientChange = (index, fieldName, event) => {
-    const newIngredientsList = [...ingredientsList];
-    newIngredientsList[index][fieldName] = event.target.value;
-    setIngredientsList(newIngredientsList);
+    const value = event.target.value;
+    setIngredientsList((prevIngredientsList) => {
+      const updatedList = [...prevIngredientsList];
+      updatedList[index] = { ...updatedList[index], [fieldName]: value };
+      return updatedList;
+    });
   };
   
   const handleEditRecipe = () => {
@@ -193,10 +200,7 @@ const EditRecipe = () => {
                 </label>
                 <select
                   value={ingredientList.ingredient ? ingredientList.ingredient.id : ingredientList.ingredient_id}
-                  onChange={(event) =>
-                    console.log(event.target.value) &&
-                    handleIngredientChange(index, "ingredient_id", event)
-                  }
+                  onChange={(event) => handleIngredientChange(index, "ingredient_id", { target: { value: Number(event.target.value) } })}
                   className="form-select border border-gray-500 px-4 py-2 w-full"
                 >
                   <option value="">Selecione um ingrediente</option>
